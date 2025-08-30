@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
-import { PdfEditor } from "@nutrient/sdk";
+import dynamic from "next/dynamic";
+const PdfEditor = dynamic(() => import("../components/PdfEditor").then(m => m.PdfEditor), { ssr: false });
 
 export default function Home() {
   const [pdfFile, setPdfFile] = useState(null);
@@ -7,14 +8,14 @@ export default function Home() {
 
   // File upload handler
   function onFileChange(e) {
-    const file = e.target.files;
-    if (file && file.type === "application/pdf") {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPdfFile(reader.result);
-      };
-      reader.readAsArrayBuffer(file);
-    }
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (file.type !== "application/pdf") return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPdfFile(reader.result);
+    };
+    reader.readAsArrayBuffer(file);
   }
 
   return (
